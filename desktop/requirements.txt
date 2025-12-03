@@ -1,0 +1,4 @@
+websockets
+pywin32
+pydantic
+pywinauto
