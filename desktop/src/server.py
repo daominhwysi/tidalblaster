@@ -76,7 +76,6 @@ class AppManager:
 manager = AppManager()
 
 
-# Example event handler
 @on("command")
 async def handle_command(data, websocket):
     try:
@@ -113,9 +112,7 @@ async def ws_client(uri):
             message = await websocket.recv()
             try:
                 payload = json.loads(message)
-                # Validate event structure
                 event_msg = EventMessage(**payload)
-                # Dispatch to handler
                 handler = event_handlers.get(event_msg.event)
                 if handler:
                     await handler(event_msg.data, websocket)

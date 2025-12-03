@@ -53,7 +53,6 @@ class MusicAppController:
                 return
             try:
                 _, pid = win32process.GetWindowThreadProcessId(hwnd)
-                # Dùng quyền query giới hạn để tránh Access Denied
                 h_process = win32api.OpenProcess(
                     win32con.PROCESS_QUERY_INFORMATION | win32con.PROCESS_VM_READ,
                     False,
@@ -81,7 +80,6 @@ class MusicAppController:
         if not keys_string:
             return False, "Command mapping not found"
 
-        # Lấy PID mới nhất (Stateless check)
         pid = self._get_pid_by_name()
         if not pid:
             return False, f"{self.app_name} is not running"
@@ -89,18 +87,15 @@ class MusicAppController:
         original_hwnd = win32gui.GetForegroundWindow()
 
         try:
-            # Kết nối lại mỗi lần gọi để đảm bảo handle luôn tươi mới
             app = Application(backend="win32").connect(process=pid)
             dlg = app.top_window()
 
-            # Xử lý trường hợp minimize
             if dlg.get_show_state() == win32con.SW_SHOWMINIMIZED:
                 dlg.restore()
 
             dlg.set_focus()
             dlg.type_keys(keys_string, pause=0.05)
 
-            # Trả focus về cửa sổ cũ
             if original_hwnd and original_hwnd != dlg.handle:
                 try:
                     time.sleep(0.05)
@@ -121,7 +116,6 @@ class MusicAppController:
         except Exception as e:
             return False, str(e)
 
-    # Public Methods trả về (Success, Message)
     def play_pause(self):
         return self._send_keys_pywinauto("play_pause")
 
