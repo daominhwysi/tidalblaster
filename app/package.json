@@ -1,0 +1,21 @@
+{
+  "name": "app",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts"
+  },
+  "dependencies": {
+    "@elysiajs/jwt": "^1.4.0",
+    "@prisma/adapter-pg": "^7.0.1",
+    "@prisma/client": "^7.0.1",
+    "elysia": "latest",
+    "ioredis": "^5.8.2",
+    "prisma": "^7.0.1"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "dotenv": "^17.2.3"
+  },
+  "module": "src/index.js"
+}
