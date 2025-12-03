@@ -1,4 +1,3 @@
-# --- controller.py ---
 import time
 import win32gui
 import win32process
@@ -66,7 +65,6 @@ class MusicAppController:
                     win32api.CloseHandle(h_process)
 
                 if target_name in exe_path.lower():
-                    # Check thêm title để chắc chắn đó là cửa sổ chính
                     if win32gui.GetWindowText(hwnd):
                         found_pid = pid
             except Exception:
@@ -101,7 +99,6 @@ class MusicAppController:
                     time.sleep(0.05)
                     win32gui.SetForegroundWindow(original_hwnd)
                 except Exception:
-                    # Fallback nếu không set được focus
                     win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
                     win32api.keybd_event(
                         win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0
