@@ -3,3 +3,4 @@
 /desktop/__pycache__
 app/.env
 /app/prisma/migrations
+app/test_client.ts

@@ -49,4 +49,7 @@ export const wsRoute = new Elysia()
     async close(ws) {
       await playerHandler.handleDisconnect(ws);
     },
+    async pong(ws) {
+      playerHandler.handlePong(ws);
+    },
   });
