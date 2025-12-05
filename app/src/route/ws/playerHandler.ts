@@ -2,6 +2,8 @@ import { WSEvent } from "../../lib/events";
 import { redis_client } from "../../lib/redis";
 import { PlayerWS } from "../../types";
 
+export const connectedClients = new Map<string, PlayerWS>();
+
 export const playerHandler = {
   async handlePong(ws: PlayerWS) {
     if (!ws.data.user) {
@@ -24,6 +26,7 @@ export const playerHandler = {
       return;
     }
     const user = ws.data.user;
+    connectedClients.set(user.clientId, ws);
 
     const userTopic = `user:${user.id}`;
     ws.subscribe(userTopic);
@@ -67,6 +70,9 @@ export const playerHandler = {
     const user = ws.data.user;
     const userId = user.id;
     const userTopic = `user:${user.id}`;
+    if (ws.data.user?.clientId) {
+      connectedClients.delete(ws.data.user.clientId);
+    }
 
     if (!user) return;
     if (user.role == "music_player") {
@@ -79,8 +85,28 @@ export const playerHandler = {
         })
       );
     }
+    // Note: Evaluate lua script here in the future to avoid race condition
+    const count = await redis_client.zcard(`active_players:${userId}`);
+    if (count === 0) await redis_client.srem("active_user_ids", userId);
   },
+  async closeWsConnection(clientId: string) {
+    const ws = connectedClients.get(clientId);
 
+    if (ws) {
+      ws.send(
+        JSON.stringify({
+          event: "KICKED",
+          data: "You have been disconnected by server.",
+        })
+      );
+
+      ws.close();
+      connectedClients.delete(clientId);
+
+      return true;
+    }
+    return false;
+  },
   handlePlayMusic(ws: PlayerWS, payload: { songId: string }) {
     console.log(`User ${ws.data.user.id} wants to play ${payload.songId}`);
   },

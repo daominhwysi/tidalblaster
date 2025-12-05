@@ -4,6 +4,7 @@ import { prisma } from "./lib/prismaClient";
 import { authRoutes } from "./route/auth";
 import { wsRoute } from "./route/ws";
 import { ZombieHandler } from "./worker/zombieHandler";
+import { ClusterHandler } from "./worker/clusterHandler";
 
 const app = new Elysia()
   .decorate("prisma", prisma)
@@ -14,6 +15,8 @@ const app = new Elysia()
 if (app.server) {
   const zombieHandler = new ZombieHandler(app.server);
   zombieHandler.start();
+  const clusterHandler = new ClusterHandler();
+  clusterHandler.start();
   console.log(
     `🦊 Server running at ${app.server?.hostname}:${app.server?.port}`
   );

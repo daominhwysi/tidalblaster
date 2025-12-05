@@ -14,3 +14,8 @@ export type WSMessage<T = any> = {
   event: WSEvent;
   data: T;
 };
+export const SERVER_TOPIC = "server_commands";
+export type KickMessage = {
+  type: "KICK_CLIENT";
+  clientId: string;
+};
