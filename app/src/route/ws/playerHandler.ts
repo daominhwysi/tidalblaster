@@ -1,8 +1,14 @@
-import { WSEvent } from "../../lib/events";
+import { WSEvent, WSMessage } from "../../lib/events";
 import { redis_client } from "../../lib/redis";
 import { PlayerWS } from "../../types";
+import { z } from "zod";
 
 export const connectedClients = new Map<string, PlayerWS>();
+
+const CONTROL_SONG = z.object({
+  targetPlayer: z.string(),
+  actionType: z.enum(["PLAY", "STOP", "PREVIOUS_TRACK", "NEXT_TRACK"]),
+});
 
 export const playerHandler = {
   async handlePong(ws: PlayerWS) {
@@ -107,7 +113,21 @@ export const playerHandler = {
     }
     return false;
   },
-  handlePlayMusic(ws: PlayerWS, payload: { songId: string }) {
-    console.log(`User ${ws.data.user.id} wants to play ${payload.songId}`);
+  handleSongEvent(ws: PlayerWS, message: object) {
+    // const input = JSON.parse(message);
+
+    const result = CONTROL_SONG.safeParse(message);
+
+    if (!result.success) {
+      console.log("Invalid:", result.error.format());
+    } else {
+      const ws = connectedClients.get(result.data.targetPlayer);
+      if (ws) {
+        JSON.stringify({
+          event: result.data.actionType,
+        });
+      }
+      console.log("Valid:", result.data);
+    }
   },
 };

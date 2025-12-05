@@ -26,11 +26,12 @@ export const wsRoute = new Elysia()
 
     async message(ws, rawMessage) {
       try {
-        const message = JSON.parse(rawMessage as string) as WSMessage;
-
+        const message = (
+          typeof rawMessage === "string" ? JSON.parse(rawMessage) : rawMessage
+        ) as WSMessage;
         switch (message.event) {
-          case WSEvent.PLAY_MUSIC:
-            playerHandler.handlePlayMusic(ws, message.data);
+          case WSEvent.SONG_CONTROL:
+            playerHandler.handleSongEvent(ws, message.data);
             break;
 
           case WSEvent.PING:

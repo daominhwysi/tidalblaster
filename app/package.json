@@ -11,7 +11,8 @@
     "@prisma/client": "^7.0.1",
     "elysia": "latest",
     "ioredis": "^5.8.2",
-    "prisma": "^7.0.1"
+    "prisma": "^7.0.1",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "bun-types": "latest",

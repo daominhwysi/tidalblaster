@@ -4,3 +4,4 @@
 app/.env
 /app/prisma/migrations
 app/test_client.ts
+/test
