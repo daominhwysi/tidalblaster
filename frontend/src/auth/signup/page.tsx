@@ -3,22 +3,23 @@ import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 export default function SignUpPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [step, setStep] = useState<"cred" | "name">("cred");
+  const [name, setName] = useState("");
+  const { register } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const handleSubmit = async (e: React.FormEvent) => {
+    setStep("name");
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    // Simulate login attempt
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      // Replace with actual authentication logic
-      console.log("Login attempt with:", { email, password });
+      await register({ username, password, name });
     } catch (err) {
       setError("An error occurred. Please try again.");
     } finally {
@@ -64,69 +65,106 @@ export default function SignUpPage() {
               </p>
             </div>
             {/* Form */}
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-              {/* Email Input */}
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="email"
-                  className="text-brand text-sm font-medium"
-                >
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="px-4 py-3 rounded-lg border border-brand/12 bg-white text-brand placeholder-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all"
-                  required
-                />
-              </div>
+            {step === "cred" && (
+              <form
+                className="flex flex-col gap-6"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setStep("name");
+                }}
+              >
+                {/* Email Input */}
+                <div className="flex flex-col gap-2">
+                  <label className="text-brand text-sm font-medium">
+                    Username
+                  </label>
+                  <input
+                    id="email"
+                    placeholder="airforcethree@usa.gov.vn"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="px-4 py-3 rounded-lg border border-brand/12 bg-white text-brand placeholder-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all"
+                    required
+                  />
+                </div>
 
-              {/* Password Input */}
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
+                {/* Password Input */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <label
+                      htmlFor="password"
+                      className="text-brand text-sm font-medium"
+                    >
+                      Password
+                    </label>
+                    <a
+                      href="#"
+                      className="text-brand/70 text-sm font-medium hover:text-brand transition-colors"
+                    >
+                      Forgot?
+                    </a>
+                  </div>
+                  <input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="px-4 py-3 rounded-lg border border-brand/12 bg-white text-brand placeholder-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all"
+                    required
+                  />
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="p-3 rounded-lg bg-[#fee2e2] text-[#991b1b] text-sm font-medium">
+                    {error}
+                  </div>
+                )}
+
+                {/* Sign In Button */}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="h-11 w-full bg-brand hover:bg-brand/90 text-white rounded-full font-medium text-base shadow-md disabled:opacity-50"
+                >
+                  {loading ? "Signing in..." : "Sign in"}
+                </Button>
+              </form>
+            )}
+            {step === "name" && (
+              <form
+                onSubmit={(e) => handleSubmit(e)}
+                className="flex flex-col gap-6"
+              >
+                <div className="flex flex-col gap-2">
                   <label
-                    htmlFor="password"
+                    htmlFor="name"
                     className="text-brand text-sm font-medium"
                   >
-                    Password
+                    Your name
                   </label>
-                  <a
-                    href="#"
-                    className="text-brand/70 text-sm font-medium hover:text-brand transition-colors"
-                  >
-                    Forgot?
-                  </a>
+                  <input
+                    id="name"
+                    type="text"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="px-4 py-3 rounded-lg border border-brand/12 bg-white text-brand placeholder-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all"
+                    required
+                  />
                 </div>
-                <input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="px-4 py-3 rounded-lg border border-brand/12 bg-white text-brand placeholder-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all"
-                  required
-                />
-              </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="p-3 rounded-lg bg-[#fee2e2] text-[#991b1b] text-sm font-medium">
-                  {error}
-                </div>
-              )}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="h-11 w-full bg-brand hover:bg-brand/90 text-white rounded-full font-medium text-base shadow-md disabled:opacity-50"
+                >
+                  Continue
+                </Button>
+              </form>
+            )}
 
-              {/* Sign In Button */}
-              <Button
-                type="submit"
-                disabled={loading}
-                className="h-11 w-full bg-brand hover:bg-brand/90 text-white rounded-full font-medium text-base shadow-md disabled:opacity-50"
-              >
-                {loading ? "Signing in..." : "Sign in"}
-              </Button>
-            </form>
             {/* Divider
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-brand/12"></div>

@@ -5,10 +5,16 @@ import { authRoutes } from "./route/auth";
 import { wsRoute } from "./route/ws";
 import { ZombieHandler } from "./worker/zombieHandler";
 import { ClusterHandler } from "./worker/clusterHandler";
+import { cors } from "@elysiajs/cors";
 
 const app = new Elysia()
   .decorate("prisma", prisma)
   .use(authRoutes)
+  .use(
+    cors({
+      origin: () => true,
+    })
+  )
   .use(wsRoute)
   .listen(Bun.env.PORT || 3000);
 

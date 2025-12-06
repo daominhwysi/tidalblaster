@@ -39,12 +39,12 @@ def login(username: str, password: str):
             typer.echo(f"Login failed: {r.text}")
             return
 
-        token = r.json().get("token")
-        if not token:
+        access_token = r.json().get("access_token")
+        if not access_token:
             typer.echo("Login failed: no token returned")
             return
 
-        keyring.set_password(PASSWORD_SERVICE, "token", token)
+        keyring.set_password(PASSWORD_SERVICE, "access_token", access_token)
         typer.echo("Logged in")
     except Exception as e:
         typer.echo(f"Error: {e}")
@@ -53,16 +53,16 @@ def login(username: str, password: str):
 @app.command()
 def logout():
     try:
-        keyring.delete_password(PASSWORD_SERVICE, "token")
+        keyring.delete_password(PASSWORD_SERVICE, "access_token")
         typer.echo("Logged out")
     except Exception as e:
         typer.echo(f"Error: {e}")
 
 
 def get_user():
-    token = keyring.get_password(PASSWORD_SERVICE, "token")
-    if token:
-        return token
+    access_token = keyring.get_password(PASSWORD_SERVICE, "access_token")
+    if access_token:
+        return access_token
     else:
         raise Exception("No user token found")
 
@@ -75,7 +75,7 @@ def status():
 
 @app.command()
 def run():
-    token = keyring.get_password(PASSWORD_SERVICE, "token")
+    token = keyring.get_password(PASSWORD_SERVICE, "access_token")
     if token:
         with httpx.Client() as client:
             header = {"Authorization": f"Bearer {token}"}

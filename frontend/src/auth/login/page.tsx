@@ -3,22 +3,23 @@ import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+    console.log(username);
+    console.log(password);
     // Simulate login attempt
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      // Replace with actual authentication logic
-      console.log("Login attempt with:", { email, password });
+      await login({ username, password });
     } catch (err) {
       setError("An error occurred. Please try again.");
     } finally {
@@ -62,7 +63,7 @@ export default function LoginPage() {
               </p>
             </div>
             {/* Form */}
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
               {/* Email Input */}
               <div className="flex flex-col gap-2">
                 <label
@@ -72,11 +73,10 @@ export default function LoginPage() {
                   Email address
                 </label>
                 <input
-                  id="email"
-                  type="email"
+                  id="username"
                   placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="px-4 py-3 rounded-lg border border-brand/12 bg-white text-brand placeholder-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all"
                   required
                 />
@@ -161,21 +161,6 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      {/* <footer className="w-full border-t border-brand/6 bg-[#f7f5f3]">
-        <div className="max-w-[1060px] mx-auto px-4 py-8 flex items-center justify-between text-sm text-brand">
-          <p>© 2025 Acme . All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-brand transition-colors">
-              Privacy
-            </a>
-            <a href="#" className="hover:text-brand transition-colors">
-              Terms
-            </a>
-          </div>
-        </div>
-      </footer> */}
     </div>
   );
 }

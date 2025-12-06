@@ -23,12 +23,12 @@ export const loginRoute = new Elysia()
         return status(401, "Unauthorized");
       }
 
-      const token = await jwt.sign({
+      const access_token = await jwt.sign({
         username: user.username,
         name: user.name,
         id: user.id,
       });
-      return { token };
+      return { access_token };
     },
     {
       body: t.Object({
