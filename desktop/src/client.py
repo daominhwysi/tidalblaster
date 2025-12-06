@@ -3,13 +3,14 @@ import json
 import websockets
 from pydantic import ValidationError
 from pydantic import BaseModel
-from typing import Optional, Dict, Literal
+from typing import Optional, Dict, Literal, Any
 from enum import Enum
 from src.controller import MusicAppController
 
 
 class EventMessage(BaseModel):
     event: str
+    data: Any | None = None
 
 
 class ActionEnum(str, Enum):
@@ -76,18 +77,13 @@ class AppManager:
 manager = AppManager()
 
 
+# if ws message come with event = "command"
 @on("command")
 async def handle_command(data, websocket):
     try:
         cmd = CommandData(**data)
         success, message = manager.execute(cmd)
-        result = {
-            "status": success,
-            "executed_action": cmd.action.value,
-            "target": cmd.target.value,
-            "message": message,
-        }
-        await websocket.send(json.dumps(result))
+
     except ValidationError as e:
         await websocket.send(
             json.dumps({"event": "error", "data": {"message": str(e)}})
@@ -99,27 +95,40 @@ async def handle_command(data, websocket):
         )
 
 
-@on("ping")
-async def handle_ping(_, websocket):
-    await websocket.send(json.dumps({"event": "pong", "data": {}}))
+@on("PONG")
+async def handle_pong(_, websocket):
+    pass
 
 
 async def ws_client(uri):
-    async with websockets.connect(uri) as websocket:
+    async with websockets.connect(uri) as ws:
         print("Connected to server")
 
+        async def ping_loop():
+            while True:
+                # FIX: Change None to {} (empty dict) or "" (empty string).
+                # 'None' becomes 'null' in JSON, which strictly typed servers often reject.
+                payload = {"event": "PING", "data": {}}
+
+                print("Sending PING...")
+                await ws.send(json.dumps(payload))
+                await asyncio.sleep(10)
+
+        asyncio.create_task(ping_loop())
+
         while True:
-            message = await websocket.recv()
+            message = await ws.recv()
             try:
                 payload = json.loads(message)
                 event_msg = EventMessage(**payload)
                 handler = event_handlers.get(event_msg.event)
                 if handler:
-                    await handler(event_msg.data, websocket)
+                    await handler(event_msg.data, ws)
                 else:
                     print("No handler for event:", event_msg.event)
             except (json.JSONDecodeError, ValidationError) as e:
                 print("Invalid message:", e)
 
+
 if __name__ == "__main__":
-  asyncio.run(ws_client("ws://localhost:8765"))
+    asyncio.run(ws_client("ws://localhost:8765"))

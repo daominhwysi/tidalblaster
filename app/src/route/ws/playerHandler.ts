@@ -124,7 +124,8 @@ export const playerHandler = {
       const ws = connectedClients.get(result.data.targetPlayer);
       if (ws) {
         JSON.stringify({
-          event: result.data.actionType,
+          event: "command",
+          actionType: result.data.actionType,
         });
       }
       console.log("Valid:", result.data);

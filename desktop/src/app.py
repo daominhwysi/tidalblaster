@@ -1,12 +1,15 @@
 import typer
 import keyring
 import httpx
+from src.client import ws_client
+import asyncio
 
 app = typer.Typer()
 
 PASSWORD_SERVICE = "my_twinky_sissy_cli_app"
 BASE_URL = "http://localhost:3000"
 BASE_WS_URL = "ws://localhost:3000"
+
 
 @app.command()
 def signup(username: str, name: str, password: str):
@@ -82,6 +85,7 @@ def run():
             )
             ticketId = r.json()["ticketId"]
             ws_url = BASE_WS_URL + f"/ws/?ticket={ticketId}&role=music_player"
+            asyncio.run(ws_client(ws_url))
 
     else:
         typer.echo("Not logged in. Please log in first.")
