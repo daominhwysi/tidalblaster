@@ -2,3 +2,6 @@ websockets
 pywin32
 pydantic
 pywinauto
+typer
+keyring
+httpx

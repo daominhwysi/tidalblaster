@@ -37,7 +37,6 @@ class MusicAppController:
             raise ValueError(f"App '{app_name}' not supported")
 
     def is_running(self):
-        """Kiểm tra nhanh xem process có đang chạy không"""
         return self._get_pid_by_name() is not None
 
     def _get_pid_by_name(self):

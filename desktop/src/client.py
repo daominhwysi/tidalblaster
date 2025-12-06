@@ -121,5 +121,5 @@ async def ws_client(uri):
             except (json.JSONDecodeError, ValidationError) as e:
                 print("Invalid message:", e)
 
-
-asyncio.run(ws_client("ws://localhost:8765"))
+if __name__ == "__main__":
+  asyncio.run(ws_client("ws://localhost:8765"))
