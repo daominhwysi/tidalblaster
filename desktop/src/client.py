@@ -14,12 +14,12 @@ class EventMessage(BaseModel):
 
 
 class ActionEnum(str, Enum):
-    play = "play"
-    pause = "pause"
+    play = "PLAY"
+    pause = "STOP"
     forward = "forward"
     backward = "backward"
-    next_track = "next track"
-    previous_track = "previous track"
+    next_track = "PREVIOUS_TRACK"
+    previous_track = "NEXT_TRACK"
 
 
 class TargetEnum(str, Enum):

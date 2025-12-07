@@ -69,16 +69,31 @@ def get_user():
 
 @app.command()
 def status():
-    user = keyring.get_password(PASSWORD_SERVICE, "token")
-    typer.echo("Logged in" if user else "Not logged in")
+    access_token = keyring.get_password(PASSWORD_SERVICE, "access_token")
+    if access_token:
+        try:
+            with httpx.Client() as client:
+                header = {"Authorization": f"Bearer {access_token}"}
+
+                r = client.get(
+                    url=BASE_URL + "/auth/me",
+                    headers=header,
+                )
+                user = r.json()
+                typer.echo(f"Logged in as {user['name']}")
+        except Exception as e:
+            typer.echo("Server is not running rn")
+    else:
+        typer.echo("Not logged in")
+    # typer.echo("Logged in" if user else "Not logged in")
 
 
 @app.command()
 def run():
-    token = keyring.get_password(PASSWORD_SERVICE, "access_token")
-    if token:
+    access_token = keyring.get_password(PASSWORD_SERVICE, "access_token")
+    if access_token:
         with httpx.Client() as client:
-            header = {"Authorization": f"Bearer {token}"}
+            header = {"Authorization": f"Bearer {access_token}"}
             r = client.get(
                 url=BASE_URL + "/auth/ticket",
                 headers=header,

@@ -7,6 +7,7 @@ export const connectedClients = new Map<string, PlayerWS>();
 
 const CONTROL_SONG = z.object({
   targetPlayer: z.string(),
+  appTarget: z.enum(["spotify", "tidal", "apple music"]).default("spotify"),
   actionType: z.enum(["PLAY", "STOP", "PREVIOUS_TRACK", "NEXT_TRACK"]),
 });
 
@@ -114,21 +115,30 @@ export const playerHandler = {
     return false;
   },
   handleSongEvent(ws: PlayerWS, message: object) {
-    // const input = JSON.parse(message);
-
     const result = CONTROL_SONG.safeParse(message);
 
     if (!result.success) {
-      console.log("Invalid:", result.error.format());
+      console.log("Invalid command format:", result.error.format());
+      return;
+    }
+
+    const { targetPlayer, actionType, appTarget } = result.data;
+    const targetWs = connectedClients.get(targetPlayer);
+
+    if (targetWs) {
+      console.log(`Forwarding ${actionType} to ${targetPlayer}`);
+
+      const payload = {
+        event: "command",
+        data: {
+          action: actionType,
+          target: appTarget,
+        },
+      };
+
+      targetWs.send(JSON.stringify(payload));
     } else {
-      const ws = connectedClients.get(result.data.targetPlayer);
-      if (ws) {
-        JSON.stringify({
-          event: "command",
-          actionType: result.data.actionType,
-        });
-      }
-      console.log("Valid:", result.data);
+      console.warn(`Target player ${targetPlayer} not found.`);
     }
   },
 };

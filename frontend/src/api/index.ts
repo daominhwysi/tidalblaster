@@ -28,11 +28,16 @@ export interface UserOut {
 export interface Token {
   access_token: string;
 }
+export interface TicketResponse {
+  ticketId: string;
+}
 export const login = async (credentials: UserIn) =>
   await apiClient.post<Token>("/auth/login", credentials);
 export const register = async (credentials: UserCreate) =>
   await apiClient.post("/auth/register", credentials);
 
 export const me = async () => apiClient.get("/auth/me");
+export const getTicket = async () =>
+  await apiClient.get<TicketResponse>("/auth/ticket");
 
 export const logout = async () => console.log("móc logout");
