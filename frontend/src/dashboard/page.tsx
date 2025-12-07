@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "../auth/context/AuthContext";
+import { useAuth } from "@/auth/context/AuthContext";
 import * as api from "@/api/index";
 import { Play, SkipBack, SkipForward } from "lucide-react";
 
@@ -19,33 +19,35 @@ export default function DashboardPage() {
 
   // 1. Initialize WebSocket
   useEffect(() => {
+    if (!user) return;
+
+    let pingInterval: number | null = null;
+
     const connectWs = async () => {
-      try {
-        const { data } = await api.getTicket();
-        // Construct WS URL (assuming backend is on port 3000)
-        const wsUrl = `${import.meta.env.VITE_BASE_API_URL.replace(
-          "http",
-          "ws"
-        )}/ws/?ticket=${data.ticketId}&role=user`;
+      const { data } = await api.getTicket();
+      const wsUrl = `${import.meta.env.VITE_BASE_API_URL.replace(
+        "http",
+        "ws"
+      )}/ws/?ticket=${data.ticketId}&role=user`;
 
-        ws.current = new WebSocket(wsUrl);
+      ws.current = new WebSocket(wsUrl);
 
-        ws.current.onopen = () => console.log("Connected to Control Server");
+      ws.current.onopen = () => {
+        pingInterval = window.setInterval(() => {
+          if (ws.current?.readyState === WebSocket.OPEN) {
+            ws.current.send(JSON.stringify({ event: "PING", data: null }));
+          }
+        }, 30000);
+      };
 
-        ws.current.onmessage = (event) => {
-          const message = JSON.parse(event.data);
-          handleWsMessage(message);
-        };
-
-        ws.current.onclose = () => console.log("Disconnected");
-      } catch (e) {
-        console.error("Failed to connect WS", e);
-      }
+      ws.current.onmessage = (event) => handleWsMessage(JSON.parse(event.data));
+      ws.current.onclose = () => console.log("Disconnected");
     };
 
-    if (user) connectWs();
+    connectWs();
 
     return () => {
+      if (pingInterval) clearInterval(pingInterval);
       ws.current?.close();
     };
   }, [user]);

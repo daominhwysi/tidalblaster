@@ -18,8 +18,8 @@ class ActionEnum(str, Enum):
     pause = "STOP"
     forward = "forward"
     backward = "backward"
-    next_track = "PREVIOUS_TRACK"
-    previous_track = "NEXT_TRACK"
+    next_track = "NEXT_TRACK"
+    previous_track = "PREVIOUS_TRACK"
 
 
 class TargetEnum(str, Enum):

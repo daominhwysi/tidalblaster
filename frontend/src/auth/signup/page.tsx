@@ -80,7 +80,7 @@ export default function SignUpPage() {
                   </label>
                   <input
                     id="email"
-                    placeholder="airforcethree@usa.gov.vn"
+                    placeholder="airforcethree"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="px-4 py-3 rounded-lg border border-brand/12 bg-white text-brand placeholder-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all"

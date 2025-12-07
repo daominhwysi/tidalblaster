@@ -19,12 +19,13 @@ export const playerHandler = {
       return;
     }
     const user = ws.data.user;
-
-    await redis_client.zadd(
-      `active_players:${user.id}`,
-      Date.now(),
-      user.clientId
-    );
+    if (user.role == "music_player") {
+      await redis_client.zadd(
+        `active_players:${user.id}`,
+        Date.now(),
+        user.clientId
+      );
+    }
   },
   async handleConnection(ws: PlayerWS) {
     if (!ws.data.user) {

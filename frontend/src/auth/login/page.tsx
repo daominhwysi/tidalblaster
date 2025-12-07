@@ -70,11 +70,11 @@ export default function LoginPage() {
                   htmlFor="email"
                   className="text-brand text-sm font-medium"
                 >
-                  Email address
+                  Username
                 </label>
                 <input
                   id="username"
-                  placeholder="you@example.com"
+                  placeholder="airforcethree"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="px-4 py-3 rounded-lg border border-brand/12 bg-white text-brand placeholder-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all"
