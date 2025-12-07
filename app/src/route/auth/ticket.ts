@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { authPlugin, setup } from "../../setup";
+import { authPlugin, setup } from "./plugin";
 export const tickets = new Map<string, any>();
 const TICKET_LIFETIME = 60_000;
 export const ticket = new Elysia()

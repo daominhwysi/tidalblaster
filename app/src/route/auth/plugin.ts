@@ -1,5 +1,5 @@
 import { Elysia, status, t } from "elysia";
-import { prisma } from "./lib/prismaClient";
+import { prisma } from "../../lib/prismaClient";
 import jwt from "@elysiajs/jwt";
 export const setup = new Elysia({ name: "setup" }).decorate("db", prisma);
 

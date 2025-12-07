@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { setup } from "../../setup";
+import { setup } from "./plugin";
 export const registerRoute = new Elysia().use(setup).post(
   "/register",
   async ({ db, body, status }) => {

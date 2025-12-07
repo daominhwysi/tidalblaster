@@ -20,7 +20,7 @@
 //     }
 //   );
 import { Elysia } from "elysia";
-import { authPlugin, setup } from "../../setup";
+import { authPlugin, setup } from "./plugin";
 
 export const userRoute = new Elysia()
   .use(setup)

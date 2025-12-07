@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { setup } from "../../setup";
+import { setup } from "./plugin";
 import { jwt } from "@elysiajs/jwt";
 export const loginRoute = new Elysia()
   .use(setup)
